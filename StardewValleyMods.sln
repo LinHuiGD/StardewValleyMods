@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaterDepthOverlay", "WaterDepthOverlay\WaterDepthOverlay.csproj", "{6F79D00C-50A4-4FA6-9183-C5D12D03E2C2}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Common\Common.shproj", "{639CB4D4-4EF7-4EEB-9EFB-A066C3B5E824}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F79D00C-50A4-4FA6-9183-C5D12D03E2C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F79D00C-50A4-4FA6-9183-C5D12D03E2C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F79D00C-50A4-4FA6-9183-C5D12D03E2C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F79D00C-50A4-4FA6-9183-C5D12D03E2C2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {786567E4-E3FE-42E3-A145-3633839311F3}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Common\Common.projitems*{639cb4d4-4ef7-4eeb-9efb-a066c3b5e824}*SharedItemsImports = 13
+		Common\Common.projitems*{6f79d00c-50a4-4fa6-9183-c5d12d03e2c2}*SharedItemsImports = 5
+	EndGlobalSection
+EndGlobal

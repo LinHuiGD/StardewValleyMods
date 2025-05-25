@@ -1,0 +1,22 @@
+{
+  // main options
+  "config.title.mainoptions": "Main Options",
+  "config.enable.name": "Enable",
+  "config.enable-overlay.name": "Keybind to toggle overlay",
+  "config.enable-overlay.desc": "Press it to toggle overlay on/off.",
+  // fishable tile overlay
+  "config.title.fishable": "Fishable Tile Overlay Colors (RGBA)",
+  "config.background.name": "Background for reference",
+  "config.background.desc": "Water tile for reference in the current map.",
+  "config.water-depth.name": "When the water depth is {{waterDepth}}",
+  "config.water-depth.desc": "The deeper the water, the higher the quality of fish obtained.\nThe max water depth is 5.\nThe depth of a water tile is basically equal to its distance to the nearest land tile.",
+  // unfishable tile overlay
+  "config.title.unfishable": "Unfishable Tile Overlay Colors (RGBA)",
+  "config.unfishable.desc": "Below are the reasons why players cannot cast a bobber on the tile.",
+  "config.enable-building-overlay.name": "Enable drawing overlay",
+  "config.building-overlay-color.name": "Blocked by buildings",
+  "config.building-overlay-color.desc": "Blocked by buildings, bridges, shores, etc.",
+  "config.enable-nofishing-overlay.name": "Enable drawing overlay",
+  "config.nofishing-color.name": "No fishing allowed here",
+  "config.nofishing-color.desc": "Defined by property of \"NoFishing\" of a tile. The \"NoFishing\" property is rarely used.\nA water tile with the \"NoFishing\" property is usually covered by other objects.\nIn SDV 1.6.15, only the tiles of two maps have this property.\nOne of them is the beach (night market).\nThis property seems to prevent players from casting bobbers on objects \nsuch as ships refreshed during the festival.\nThe other map is the mountain. \nThe tiles with the \"NoFishing\" property are usually covered by the glittering boulder, \nwhich is removed after finishing the Specialty Fish Bundle."
+}

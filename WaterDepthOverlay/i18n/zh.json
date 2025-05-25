@@ -1,0 +1,22 @@
+{
+  // 主要选项部分
+  "config.title.mainoptions": "主要选项",
+  "config.enable.name": "启用",
+  "config.enable-overlay.name": "遮罩显示开关快捷键",
+  "config.enable-overlay.desc": "按下它可以打开/关闭覆盖。",
+  // 水网格颜色部分
+  "config.title.fishable": "可钓鱼的网格遮罩颜色(RGBA)",
+  "config.background.name": "供参考的背景",
+  "config.background.desc": "当前地图中供参考的水网格。",
+  "config.water-depth.name": "水深为{{waterdepth}}时",
+  "config.water-depth.desc": "水越深，获得的鱼品质越高。\n水的最大深度是5。\n一个水网格的水深基本上等于它到最近的陆地网格的距离。",
+  // 不可钓鱼网格部分
+  "config.title.unfishable": "不可钓鱼的网格遮罩颜色(RGBA)",
+  "config.unfishable.desc": "下面是不可钓鱼的原因",
+  "config.enable-building-overlay.name": "是否绘制遮罩",
+  "config.building-overlay-color.name": "此处被建筑物遮挡",
+  "config.building-overlay-color.desc": "具有此属性的网格通常是被建筑物、桥梁、滨岸等覆盖。",
+  "config.enable-nofishing-overlay.name": "是否绘制遮罩",
+  "config.nofishing-color.name": "此处禁止钓鱼",
+  "config.nofishing-color.desc": "此属性很少使用，由地图网格的“NoFishing”属性定义。\n具有此属性的水网格通常被其他物体覆盖。\n在星露谷物语1.6.15中，只有两张地图的网格具有此属性。\n其中之一是海滩（夜市）。此属性似乎是为了\n防止玩家抛掷浮标到节日期间刷新的船只等物体上。\n另一张地图是深山。具有此属性的网格\n通常是被闪闪发光的巨石遮住，\n巨石在完成特色鱼收集包后会被移除。"
+}

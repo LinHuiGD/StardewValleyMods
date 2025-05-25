@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Fai0.StardewValleyMods.WaterDepthOverlay</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" />
+    <PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" />
+  </ItemGroup>
+
+  <Import Project="..\Common\Common.projitems" Label="Shared" />
+
+</Project>

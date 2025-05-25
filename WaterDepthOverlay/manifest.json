@@ -1,0 +1,21 @@
+{
+  "Name": "WaterDepthOverlay",
+  "Author": "Fai0",
+  "Version": "1.0.0",
+  "Description": "Colorize fishable tiles with varying hues to indicate water depth, helping players select suitable bobber casting points based on water depth/distance and map location.",
+  "UniqueID": "Fai0.WaterDepthOverlay",
+  "EntryDll": "WaterDepthOverlay.dll",
+  "MinimumApiVersion": "4.0.0",
+  "Dependencies": [
+    {
+      "UniqueID": "spacechase0.GenericModConfigMenu",
+      "IsRequired": false
+    },
+    {
+      "UniqueID": "jltaylor-us.GMCMOptions",
+      "IsRequired": false,
+      "minimumVersion": "2.1.0"
+    }
+  ],
+  "UpdateKeys": [ "Nexus:34207" ]
+}
