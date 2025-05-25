@@ -63,10 +63,7 @@ internal static class DrawHelper
     ///     <see cref="Caldera.drawWaterTile"/><br/>
     /// </remarks>
     /// <param name="b">The sprite batch being drawn.</param>
-    /// <param name="x">The tile's X tile position within the grid.</param>
-    /// <param name="y">The tile's X tile position within the grid.</param>
     /// <param name="destRect">Destination area to draw</param>
-    /// <param name="loc">Used to ,it will be set to Game1.currentLocation by default</param>
     public static void DrawWaterAnim(SpriteBatch b, Rectangle destRect)
     {
         GameLocation loc = Game1.currentLocation;
