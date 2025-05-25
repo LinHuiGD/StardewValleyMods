@@ -53,74 +53,71 @@ internal static class DrawHelper
         b.Draw(srcTex, new Vector2(destRect.X, destRect.Y), srcRect, color ?? Color.White, rotation, Vector2.Zero, scale, effects, layerDepth);
     }
 
-	/// <summary>
-	/// Reproduce visual effects of GameLocation.drawWaterTile
-	/// </summary>
-	/// <remarks>
-	///     <see cref="GameLocation.drawWaterTile"/><br/>
-	///     <see cref="VolcanoDungeon.drawWaterTile"/><br/>
-	///     <see cref="Caldera.drawWaterTile"/><br/>
-	/// </remarks>
-	/// <param name="b">The sprite batch being drawn.</param>
-	/// <param name="x">The tile's X tile position within the grid.</param>
-	/// <param name="y">The tile's X tile position within the grid.</param>
-	/// <param name="destRect">Destination area to draw</param>
-	/// <param name="loc">Used to ,it will be set to Game1.currentLocation by default</param>
-	public static void DrawWaterAnim(SpriteBatch b, int x, int y, Rectangle destRect, GameLocation? loc = null)
+    /// <summary>
+    /// Draw water animation in a rectangle.
+    /// Reproduce visual effects of GameLocation.drawWaterTile
+    /// </summary>
+    /// <remarks>
+    ///     <see cref="GameLocation.drawWaterTile"/><br/>
+    ///     <see cref="VolcanoDungeon.drawWaterTile"/><br/>
+    ///     <see cref="Caldera.drawWaterTile"/><br/>
+    /// </remarks>
+    /// <param name="b">The sprite batch being drawn.</param>
+    /// <param name="x">The tile's X tile position within the grid.</param>
+    /// <param name="y">The tile's X tile position within the grid.</param>
+    /// <param name="destRect">Destination area to draw</param>
+    /// <param name="loc">Used to ,it will be set to Game1.currentLocation by default</param>
+    public static void DrawWaterAnim(SpriteBatch b, Rectangle destRect)
     {
-        loc = loc ?? Game1.currentLocation;
+        GameLocation loc = Game1.currentLocation;
         if (loc is null || loc.waterTiles is null) return;
         if (loc is VolcanoDungeon)
         {
             VolcanoDungeon location = (VolcanoDungeon)loc;
-			// Dwarfshop in VolcanoDungeon level 5
-			if (location.level.Value == 5)
+            // Dwarfshop in VolcanoDungeon level 5
+            if (location.level.Value == 5)
             {
-                BaseDrawWaterAnim(b, x, y, destRect, loc);
+                BaseDrawWaterAnim(b, destRect, loc);
                 return;
             }
-			// water pool area in VolcanoDungeon level 0
-			if (location.level.Value == 0 && x > 23 && x < 28 && y > 42 && y < 47)
+            // water pool area in VolcanoDungeon level 0
+            //if (location.level.Value == 0 && x > 23 && x < 28 && y > 42 && y < 47)
+            if (location.level.Value == 0)
             {
-                BaseDrawWaterAnim(b, x, y, destRect, loc, Color.DeepSkyBlue * 0.8f);
+                BaseDrawWaterAnim(b, destRect, loc, Color.DeepSkyBlue * 0.8f);
                 return;
             }
-            DoDrawWaterAnim(b, x, y, destRect, location.mapBaseTilesheet, 16, 0, 320, location.waterColor.Value, loc);
+            DoDrawWaterAnim(b, destRect, location.mapBaseTilesheet, 16, 0, 320, loc, location.waterColor.Value);
         }
         else if (loc is Caldera) 
         {
             Caldera location = (Caldera)loc;
-            DoDrawWaterAnim(b, x, y, destRect, location.mapBaseTilesheet, 16, 0, 320, location.waterColor.Value, loc);
+            DoDrawWaterAnim(b, destRect, location.mapBaseTilesheet, 16, 0, 320, loc, location.waterColor.Value);
         }
         else
         {
-            BaseDrawWaterAnim(b, x, y, destRect, loc);
+            BaseDrawWaterAnim(b,destRect, loc);
         }
     }
 
-    private static void BaseDrawWaterAnim(SpriteBatch b, int x, int y, Rectangle destRect, GameLocation loc, Color? color = null)
+    private static void BaseDrawWaterAnim(SpriteBatch b, Rectangle destRect, GameLocation loc, Color? color = null)
     {
-        DoDrawWaterAnim(b, x, y, destRect, Game1.mouseCursors, 64, 0, 2064, color ?? loc.waterColor.Value, loc);
+        DoDrawWaterAnim(b, destRect, Game1.mouseCursors, 64, 0, 2064, loc, color ?? loc.waterColor.Value);
     }
 
-	private static void DoDrawWaterAnim(SpriteBatch b, int x, int y, Rectangle destRect, Texture2D texture, int texSize, int texOffsetX, int texOffsetY, Color color, GameLocation loc)
+    private static void DoDrawWaterAnim(SpriteBatch b, Rectangle destRect, Texture2D texture, int texSize, int texOffsetX, int texOffsetY, GameLocation loc, Color color)
     {
-        bool bottomY = y == loc.map.Layers[0].LayerHeight - 1 || !loc.waterTiles[x, y + 1];
-        bool topY = y == 0 || !loc.waterTiles[x, y - 1];
-
         var destHeight = destRect.Height;
         // amount of pixels the water moves up
-        float waterPosition = loc.waterPosition;
-        float scale = 1f * destHeight / texSize;
-
+        int waterPosition = (int)System.Math.Round(loc.waterPosition);
         AdaptiveDraw(b, texture,
             new Rectangle(
                 texOffsetX + loc.waterAnimationIndex * texSize,
-                texOffsetY + (((x + y) % 2 != 0) ? ((!loc.waterTileFlip) ? texSize * 2 : 0) : (loc.waterTileFlip ? texSize * 2 : 0)) + (topY ? (int)System.Math.Round(waterPosition / scale) : 0),
+                texOffsetY + ((!loc.waterTileFlip) ? texSize * 2 : 0), // (x + y) % 2 != 0
                 texSize,
-                texSize + (topY ? ((int)System.Math.Round(0f - waterPosition / scale)) : 0)),
+                texSize),
             destRect, 
-            destOffset: new Vector2(0, -(int)System.Math.Round((!topY) ? waterPosition : 0f)), 
+            destOffset: new Vector2(0, - waterPosition),
             stretch: false, 
             color: color);
 
@@ -129,21 +126,21 @@ internal static class DrawHelper
             AdaptiveDraw(b, texture,
                 new Rectangle(
                     texOffsetX + loc.waterAnimationIndex * texSize,
-                    texOffsetY + (((x + (y + 1)) % 2 != 0) ? ((!loc.waterTileFlip) ? texSize * 2 : 0) : (loc.waterTileFlip ? texSize * 2 : 0)),
+                    texOffsetY + (loc.waterTileFlip ? texSize * 2 : 0), // (x + (y + 1)) % 2 == 0)
                     texSize,
-                    texSize - (int)System.Math.Round(texSize - waterPosition / scale) + 1), // hacked, "- 1" in original code
+                    texSize),
                 destRect,
-                destOffset: new Vector2(0, destHeight - (int)System.Math.Round(waterPosition)),
+                destOffset: new Vector2(0, destHeight - waterPosition),
                 stretch: false,
                 color: color);
         }
     }
 
-	/// <summary>
-	/// Draw water in the destination rectangle, including water textures in the map background and water animation.<br/>
-	/// <see cref="Game1.DrawWorld"/>
-	/// </summary>
-	public static void DrawWater(SpriteBatch b, Rectangle destRect, Texture2D bgTex, Rectangle bgSrcRect, int x=-1, int y=-1, bool enableScissor=true)
+    /// <summary>
+    /// Draw water in the destination rectangle, including water textures in the map background and water animation.<br/>
+    /// <see cref="Game1.DrawWorld"/>
+    /// </summary>
+    public static void DrawWater(SpriteBatch b, Rectangle destRect, Texture2D bgTex, Rectangle bgSrcRect, bool enableScissor=true)
     {
         b.End();
 
@@ -153,13 +150,13 @@ internal static class DrawHelper
         AdaptiveDraw(b, bgTex, bgSrcRect, destRect, Vector2.Zero);
         b.End();
 
-        if (x >= 0 && y >=0)
+        if (Game1.currentLocation is not null)
         {
             // animation
             Rectangle cachedScissorRect = b.GraphicsDevice.ScissorRectangle;
             if (enableScissor) b.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(destRect, cachedScissorRect);
             b.Begin(SpriteSortMode.Deferred, ColorBlendState, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
-            DrawWaterAnim(b, x, y, destRect);
+            DrawWaterAnim(b, destRect);
             b.End();
             if (enableScissor) b.GraphicsDevice.ScissorRectangle = cachedScissorRect;
         }
