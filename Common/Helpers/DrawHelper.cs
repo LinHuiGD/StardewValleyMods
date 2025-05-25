@@ -37,8 +37,15 @@ internal static class DrawHelper
     });
     public static Texture2D Pixel => LazyPixel.Value;
 
-    public static void AdaptiveDraw(SpriteBatch b, Texture2D srcTex, Rectangle srcRect, Rectangle destRect, Vector2 destOffset, Color? color = null, bool stretch = true, float rotation=0f, SpriteEffects effects=SpriteEffects.None, float layerDepth=1f)
+    public static void AdaptiveDraw(SpriteBatch b, Texture2D srcTex, Rectangle srcRect, Rectangle destRect, Vector2 destOffset, Color? color = null, bool stretch = true, float rotation=0f, SpriteEffects effects=SpriteEffects.None, float layerDepth=-1f)
     {
+        // valid range of layerDepth is [0f, 1f]
+        // Depth is ignored in Deferred mode, used in BackToFront and FrontToBack modes.
+        if (layerDepth < 0f)
+        {
+            /// <see cref="Menus.IClickableMenu.drawTextureBox"/>
+            layerDepth = 0.8f - (float)destRect.Y * 1E-06f;
+        }
         float scaleX = 1f * destRect.Width / srcRect.Width;
         float scaleY = 1f * destRect.Height / srcRect.Height;
         Vector2 scale;
@@ -66,8 +73,8 @@ internal static class DrawHelper
     /// <param name="destRect">Destination area to draw</param>
     public static void DrawWaterAnim(SpriteBatch b, Rectangle destRect)
     {
-        GameLocation loc = Game1.currentLocation;
-        if (loc is null || loc.waterTiles is null) return;
+        GameLocation? loc = Game1.currentLocation;
+        if (loc is null) return;
         if (loc is VolcanoDungeon)
         {
             VolcanoDungeon location = (VolcanoDungeon)loc;
@@ -143,7 +150,8 @@ internal static class DrawHelper
 
         // background
         // using OverlayBlendState instead of AlphaBlend, avoid to blend with rendered world
-        b.Begin(SpriteSortMode.Texture, BlendState.Opaque, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
+        // Deferred: in order of draw call sequence
+        b.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
         AdaptiveDraw(b, bgTex, bgSrcRect, destRect, Vector2.Zero);
         b.End();
 

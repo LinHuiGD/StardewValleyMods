@@ -316,12 +316,7 @@ internal class ModEntry : Mod
     {
         WaterTileData? waterTileData = GetWaterTileDataSafe();
         if (waterTileData is null || Game1.currentLocation is null)
-        {
-            //Color[] colors = new Color[1];
-            //DrawHelper.Pixel.GetData(colors);
-            //Monitor.Log($"{colors[0]}", LogLevel.Debug);
             b.Draw(DrawHelper.Pixel, destRect, WaterColor);
-        }
         else
             DrawHelper.DrawWater(b, destRect, waterTileData.Texture, waterTileData.SourceRect);
     }
