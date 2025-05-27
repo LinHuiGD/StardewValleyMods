@@ -31,7 +31,15 @@ Config menu in Volcano Caldera
 Further more, overlays can be drawn on unfishable tiles if you like.  
 Even if a tile is visible as water, if it is blocked by buildings (such as bridges, houses, shores), players cannot fish there.   
 I call it **unfishable tile** in this mod.  
-![https://i.imgur.com/uR3nFY1.png](https://i.imgur.com/uR3nFY1.png)
+![https://i.imgur.com/uR3nFY1.png](https://i.imgur.com/uR3nFY1.png)  
+## New feature
+>**Since 1.0.2**: The water depth overlay no longer obscures the player's sprite by default.  
+
+A switch named "Draw on top" has been added to the menu UI. It is off by default.  
+If you turn it on, the water depth overlay will be drawn on top of the game world.  
+As a result, the overlay will obscure the rendered game world, including the player's sprite.  
+A small trade-off: In the default configuration, you can't see the overlay of the fish pond.  
+Turn on the "Draw on top" switch if you want to see it, but then the water depth overlay will obscure the player's sprite again.
 
 ## Examples
 Here are comparisons of manual editting(probably) and in-game drawing of fishing zones.  
