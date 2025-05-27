@@ -1,4 +1,8 @@
-﻿namespace Fai0.StardewValleyMods.WaterDepthOverlay;
+﻿using Microsoft.Xna.Framework;
+using Pathoschild.Stardew.Common;
+using System.Collections.Generic;
+
+namespace Fai0.StardewValleyMods.WaterDepthOverlay;
 
 /// <summary>
 /// cache tile properties about fishing
@@ -26,4 +30,26 @@ internal class FishingTile
         }
     }
 #endif
+}
+
+// TODO tagged by fishable?
+internal class FishingTileSheet
+{
+    private FishingTile[,] tileSheet;
+    public FishingTileSheet(int width, int height)
+    {
+        tileSheet = new FishingTile[width, height];
+    }
+
+    public FishingTile this[int x, int y]
+    {
+        get
+        {
+            return tileSheet[x, y];
+        }
+        set
+        {
+            tileSheet[x, y] = value;
+        }
+    }
 }

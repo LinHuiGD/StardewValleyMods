@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI.Utilities;
 using System.Collections.Generic;
+using StardewValley.Mods;
 
 namespace Fai0.StardewValleyMods.WaterDepthOverlay;
 
@@ -21,7 +22,8 @@ internal class ModConfig
     public bool Enable{ get; set; } = true;
     // enable overlay
     [Newtonsoft.Json.JsonIgnore]
-    public bool EnableOverlay { get; set; } = true; 
+    public bool EnableOverlay { get; set; } = true;
+    public bool DrawOnTop { get; set; } = false;
     public KeybindList ToggleEnableOverlayKey { get; set; } = KeybindList.Parse("OemQuotes");
     public List<Color> DepthOverlayColors = new List<Color>()
     {

@@ -10,12 +10,14 @@ using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.Menus;
 using StardewValley.Tools;
+using StardewValley.Mods;
 using System.Collections.Generic;
 using System.Linq;
 using xTile.Layers;
 using xTile.Tiles;
 using Pathoschild.Stardew.Common;
 using StardewValley.Locations;
+using System;
 
 
 namespace Fai0.StardewValleyMods.WaterDepthOverlay;
@@ -26,12 +28,13 @@ namespace Fai0.StardewValleyMods.WaterDepthOverlay;
 internal class ModEntry : Mod
 {
     // constants
-    public const int MaxWaterDistance = 5;
+    private const int MaxWaterDistance = 5;
+
     // default water color, picked from desert
-    public Color WaterColor = new Color(0xffd48332);
+    private Color WaterColor = new Color(0xffd48332);
 
     // cache data for querying tile property
-    private FishingTile[,]? fishingTileSheet;
+    private FishingTileSheet? fishingTileSheet = null;
     private string? currentLocationName = null;
 
     // config
@@ -43,7 +46,9 @@ internal class ModEntry : Mod
     private Dictionary<(string, int), int>? waterTileIndexMapping;
 
 #if DEBUG
-    public KeybindList PrintTileInfoKey { get; set; } = KeybindList.Parse("MouseMiddle");
+    private bool enableSplashPointDrawing = false;
+    private KeybindList DebugTileKey { get; set; } = KeybindList.Parse("MouseMiddle");
+    private KeybindList DebugSplashPointKey { get; set; } = KeybindList.Parse("Home");
 #endif
     public override void Entry(IModHelper helper)
     {
@@ -53,7 +58,8 @@ internal class ModEntry : Mod
         if (Constants.TargetPlatform == GamePlatform.Android) config.EnableOverlay = true;
         if (config.Enable)
         {
-            Helper.Events.Display.RenderedWorld += OnRenderedWorld;
+            Helper.Events.Display.RenderingStep += OnRenderingStep;
+            Helper.Events.Display.RenderedStep += OnRenderedStep;
             Helper.Events.Player.Warped += Player_Warped;
         }
         Helper.Events.Input.ButtonPressed += OnButtonPressed;
@@ -64,7 +70,8 @@ internal class ModEntry : Mod
         Helper.Events.GameLoop.GameLaunched -= OnGameLaunched;
         Helper.Events.Input.ButtonPressed -= OnButtonPressed;
         Helper.Events.Player.Warped -= Player_Warped;
-        Helper.Events.Display.RenderedWorld -= OnRenderedWorld;
+        Helper.Events.Display.RenderedStep -= OnRenderedStep;
+        Helper.Events.Display.RenderingStep -= OnRenderingStep;
         base.Dispose();
     }
 
@@ -82,15 +89,17 @@ internal class ModEntry : Mod
         config.Enable = enable;
         if (enable)
         {
-            Helper.Events.Display.RenderedWorld += OnRenderedWorld;
-            Helper.Events.Player.Warped += Player_Warped;
             GenerateFishingTileSheet(Game1.currentLocation);
+            Helper.Events.Player.Warped += Player_Warped;
+            Helper.Events.Display.RenderingStep += OnRenderingStep;
+            Helper.Events.Display.RenderedStep += OnRenderedStep;
         }
         else
         {
             CleanFishingTileSheet();
             Helper.Events.Player.Warped -= Player_Warped;
-            Helper.Events.Display.RenderedWorld -= OnRenderedWorld;
+            Helper.Events.Display.RenderingStep -= OnRenderingStep;
+            Helper.Events.Display.RenderedStep -= OnRenderedStep;
         }
     }
 
@@ -118,7 +127,6 @@ internal class ModEntry : Mod
         var map = loc!.map;
         currentLocationName = loc.NameOrUniqueName;
         int width = map.Layers[0].LayerWidth, height = map.Layers[0].LayerHeight;
-        fishingTileSheet = new FishingTile[width, height];
 
         FishingTile fTile;
         Layer backLayer = map.RequireLayer("Back");
@@ -126,18 +134,20 @@ internal class ModEntry : Mod
         waterTileIndexMapping = new Dictionary<(string, int), int>();
         varyingfields.OptionIndex = 0;
 
+        fishingTileSheet = new FishingTileSheet(width, height);
+
         for (int tileX = 0; tileX < width; ++tileX)
         {
             for (int tileY = 0; tileY < height; ++tileY)
             {
                 int tileIndex = -1;
                 Tile? tile = null;
-                fTile = fishingTileSheet[tileX, tileY] = new FishingTile();
+                fTile = new FishingTile();
                 if (loc.isTileFishable(tileX, tileY))
                 {
+                    fishingTileSheet[tileX, tileY] = fTile;
                     fTile.Fishable = true;
                     fTile.WaterDistance = FishingRod.distanceToLand(tileX, tileY, loc);
-
                     // only water tile on Back layer can be drawn in menu UI
                     // ignore water on Buildings layer or GameLocation.buildings
                     tileIndex = loc.getTileIndexAt(tileX, tileY, "Back");
@@ -150,21 +160,18 @@ internal class ModEntry : Mod
                 }
                 else
                 {
+                    fishingTileSheet[tileX, tileY] = fTile;
                     if (loc.isWaterTile(tileX, tileY)) fTile.IsWater = true;
                     if (loc.doesTileHaveProperty(tileX, tileY, "NoFishing", "Back") != null) fTile.NoFishing = true;
                     if (loc.hasTileAt(tileX, tileY, "Buildings")) fTile.IsBuilding = true;
                 }
             }
         }
-#if DEBUG
-        foreach (KeyValuePair<(string, int), int> pair in waterTileIndexMapping)
-        {
-            Monitor.Log($"({pair.Key}: {waterTileDataList[pair.Value].TileIndex})", LogLevel.Debug);
-        }
 
+#if DEBUG
+        Monitor.Log($"Current location: {currentLocationName}", LogLevel.Debug);
         // print water depth map
         string line;
-        Monitor.Log($"Current Location: {currentLocationName}", LogLevel.Debug);
         for (int tileY = 0; tileY < height; ++tileY)
         {
             line = "";
@@ -186,31 +193,65 @@ internal class ModEntry : Mod
         waterTileIndexMapping = null;
         varyingfields.OptionIndex = 0;
     }
-    private void OnRenderedWorld(object? sender, RenderedWorldEventArgs e)
+
+    private void DrawSplashPointRect(GameLocation location)
     {
-        if (!Context.IsWorldReady)
-            return;
+        SpriteBatch b = Game1.spriteBatch;
+        // draw splash point
+        Point splashPoint = location.fishSplashPoint.Value;
+        if (!splashPoint.Equals(Point.Zero))
+        {
+            int splashX = splashPoint.X * Game1.tileSize - Game1.viewport.X;
+            int splashY = splashPoint.Y * Game1.tileSize - Game1.viewport.Y;
+            // draw rectangle frame of splash point
+            DrawHelper.DrawEdgeBorders(b, new Vector2(splashPoint.X, splashPoint.Y), Color.Red, true, true, true, true);
+            b.DrawString(Game1.smallFont, "Splash Point", new Vector2(splashX + 4, splashY + 4), Color.Red);
+            FishingRod? rod = Game1.player.CurrentTool as FishingRod;
+            if (rod is not null)
+            {
+                // FishingRod.draw
+                Vector2 bobber = rod.bobber.Value;
+                int bobberScreenX = (int)bobber.X - Game1.viewport.X;
+                int bobberScreenY = (int)bobber.Y - Game1.viewport.Y;
+
+                // Reduce the waiting time for the hook
+                // FishingRod.timeUntilFishingBite
+                DrawHelper.DrawEdgeBorders(b, new Rectangle(bobberScreenX - 32, bobberScreenY - 32, 64, 64), Color.Yellow);
+                b.DrawString(Game1.smallFont, "(-32,-32)\nReduce \ntimeUntilFishingBite", new Vector2(bobberScreenX - 32 + 4, bobberScreenY - 32 + 4), Color.Yellow);
+                // isNibbling and getFish
+                DrawHelper.DrawEdgeBorders(b, new Rectangle(bobberScreenX - 80, bobberScreenY - 80, 64, 64), Color.Blue);
+                b.DrawString(Game1.smallFont, "(-80,-80)\nGetFish", new Vector2(bobberScreenX - 80 + 4, bobberScreenY - 80 + 4), Color.Blue);
+                //// pullingOutOfWater
+                //DrawHelper.DrawEdgeBorders(b, new Rectangle(bobberScreenX - 32, bobberScreenY - 48, 64, 64), Color.DeepPink);
+                //b.DrawString(Game1.smallFont, "Bobber(-32, -48)", new Vector2(bobberScreenX - 32 + 4, bobberScreenY - 48 + 4), Color.Green);
+                DrawHelper.DrawEdgeBorders(b, new Rectangle(bobberScreenX, bobberScreenY, 4, 4), Color.Black);
+                b.DrawString(Game1.smallFont, "(0,0)\nBobber\nOrigin", new Vector2(bobberScreenX + 4, bobberScreenY + 4), Color.Black);
+            }
+        }
+    }
+
+    private void DrawOverlay(GameLocation location)
+    {
         if (fishingTileSheet is null)
             return;
         if (!config.EnableOverlay)
             return;
         if (Game1.player.CurrentTool is not FishingRod)
             return;
-        var location = Game1.currentLocation;
-        var name = location?.NameOrUniqueName;
-        if (location is null || name is null || name != currentLocationName)
-            return;
         if (location is Submarine && !location.canFishHere())
             return;
+
+        SpriteBatch b = Game1.spriteBatch;
+        BlendState cachedBlendState = b.GraphicsDevice.BlendState;
+        b.End();
+        b.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp);
 
         var map = location.map;
         int width = map.Layers[0].LayerWidth, height = map.Layers[0].LayerHeight;
         int clearWaterDistance, colorIndex;
         FishingTile fishingTile;
-        var b = Game1.spriteBatch;
         Color? color = null;
-        b.End();
-        b.Begin(SpriteSortMode.Deferred, DrawHelper.OverlayBlendState, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
+
         foreach (Vector2 tile in TileHelper.GetVisibleTiles(expand: 1))
         {
             color = null;
@@ -218,15 +259,21 @@ internal class ModEntry : Mod
             int tileY = (int)tile.Y;
             if (tileX < 0 || tileX >= width || tileY < 0 || tileY >= height) continue;
             fishingTile = fishingTileSheet[tileX, tileY];
-            clearWaterDistance = fishingTile.WaterDistance;
-            if (!fishingTile.Fishable)
+            if (fishingTile.Fishable)
+            {
+                clearWaterDistance = fishingTile.WaterDistance;
+                if (clearWaterDistance < 0 || clearWaterDistance > MaxWaterDistance) continue;
+                colorIndex = System.Math.Min(clearWaterDistance, MaxWaterDistance);
+                color = config.DepthOverlayColors[colorIndex];
+            }
+            else
             {
                 // This condition must be false: loc.doesTileHaveProperty(tileX, tileY, "Water", "Buildings") != null
                 // This condition must be ture: !isWaterTile(tileX, tileY) || doesTileHaveProperty(tileX, tileY, "NoFishing", "Back") != null || hasTileAt(tileX, tileY, "Buildings")
 
                 // It's not water tile or building water tile, should be land.
                 if (!fishingTile.IsWater) continue;
-                // This tile has "NoFising" property
+                // This tile has "NoFishing" property
                 if (fishingTile.NoFishing)
                 {
                     if (config.ShouldDrawNoFishingOverlay)
@@ -239,23 +286,39 @@ internal class ModEntry : Mod
                         color = config.BuildingOverlayColor;
                 }
             }
-            else if (0 <= clearWaterDistance && clearWaterDistance <= MaxWaterDistance)
-            {
-                colorIndex = System.Math.Min(clearWaterDistance, MaxWaterDistance);
-                color = config.DepthOverlayColors[colorIndex];
-            }
-#if DEBUG
-            else
-            {
-                Monitor.Log($"Invalid water distance detected: locationName={currentLocationName}, tile=({tileX}, {tileY}), waterDistance={clearWaterDistance}", LogLevel.Debug);
-            }
-#endif
-            if (color is not null) b.Draw(DrawHelper.Pixel, new Rectangle((tileX * Game1.tileSize) - Game1.viewport.X, (tileY * Game1.tileSize) - Game1.viewport.Y, Game1.tileSize, Game1.tileSize), (Color)color);
+            if (color is not null)
+                b.Draw(DrawHelper.Pixel, new Rectangle((tileX * Game1.tileSize) - Game1.viewport.X, (tileY * Game1.tileSize) - Game1.viewport.Y, Game1.tileSize, Game1.tileSize), (Color)color);
         }
         b.End();
-        b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
+        // FrontToBack used in OnRendering RenderSteps.World_Sorted
+        SpriteSortMode spriteSortMode = config.DrawOnTop ? SpriteSortMode.Deferred : SpriteSortMode.FrontToBack;
+        b.Begin(spriteSortMode, cachedBlendState, SamplerState.PointClamp);
     }
 
+    private void OnRenderingStep(object? sender, RenderingStepEventArgs e)
+    {
+        if (!Context.IsWorldReady)
+            return;
+        GameLocation location = Game1.currentLocation;
+        var name = location?.NameOrUniqueName;
+        if (location is null || name is null || name != currentLocationName)
+            return;
+        if (!config.DrawOnTop && e.Step == RenderSteps.World_Sorted) DrawOverlay(location);
+    }
+
+    private void OnRenderedStep(object? sender, RenderedStepEventArgs e)
+    {
+        if (!Context.IsWorldReady)
+            return;
+        GameLocation location = Game1.currentLocation;
+        var name = location?.NameOrUniqueName;
+        if (location is null || name is null || name != currentLocationName)
+            return;
+        if (config.DrawOnTop && e.Step == RenderSteps.World) DrawOverlay(location);
+#if DEBUG
+        if (enableSplashPointDrawing && e.Step == RenderSteps.World) DrawSplashPointRect(location);
+#endif
+    }
 
     private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
@@ -264,34 +327,78 @@ internal class ModEntry : Mod
             config.EnableOverlay = !config.EnableOverlay;
         }
 #if DEBUG
-        if (PrintTileInfoKey.JustPressed())
+        if (DebugSplashPointKey.JustPressed())
         {
-            var tile = Game1.currentCursorTile;
-            var tileX = (int)tile.X;
-            var tileY = (int)tile.Y;
+            enableSplashPointDrawing = !enableSplashPointDrawing;
+            Monitor.Log($"enableSplashPointDrawing: {enableSplashPointDrawing}", LogLevel.Debug);
+        }
+        if (DebugTileKey.JustPressed())
+        {
             var loc = Game1.currentLocation;
-            var map = loc.map;
-            int width = map.Layers[0].LayerWidth, height = map.Layers[0].LayerHeight;
-            Monitor.Log($"currentCursorTile: {tile.X}, {tile.Y}", LogLevel.Debug);
-
-            if (0 <= tileX && tileX < width && 0 <= tileY && tileY < height)
+            do
             {
-                if (fishingTileSheet is not null)
-                {
-                    FishingTile fishingTile = fishingTileSheet[tileX, tileY];
-                    Monitor.Log(DebugHelper.Dump(fishingTile), LogLevel.Debug);
-                }
+                if (loc is null) break;
+                var tile = Game1.currentCursorTile;
+                var tileX = (int)tile.X;
+                var tileY = (int)tile.Y;
+                var map = loc.map;
+                int width = map.Layers[0].LayerWidth, height = map.Layers[0].LayerHeight;
+                Monitor.Log($"currentCursorTile: {tile.X}, {tile.Y}", LogLevel.Debug);
 
-                var tileIndex = loc.getTileIndexAt(tileX, tileY, "Back");
-                if (tileIndex >= 0 && waterTileDataList is not null && waterTileIndexMapping is not null && waterTileIndexMapping.ContainsKey(("Back", tileIndex)))
+                if (0 <= tileX && tileX < width && 0 <= tileY && tileY < height)
                 {
-                    Monitor.Log(DebugHelper.Dump(waterTileDataList[waterTileIndexMapping[("Back", tileIndex)]]), LogLevel.Debug);
+                    if (fishingTileSheet is not null)
+                    {
+                        FishingTile fishingTile = fishingTileSheet[tileX, tileY];
+                        Monitor.Log(DebugHelper.Dump(fishingTile), LogLevel.Debug);
+                    }
+
+                    var tileIndex = loc.getTileIndexAt(tileX, tileY, "Back");
+                    if (tileIndex >= 0 && waterTileDataList is not null && waterTileIndexMapping is not null && waterTileIndexMapping.ContainsKey(("Back", tileIndex)))
+                    {
+                        Monitor.Log(DebugHelper.Dump(waterTileDataList[waterTileIndexMapping[("Back", tileIndex)]]), LogLevel.Debug);
+                    }
+                    /// <see cref="StardewValley.GameLocation.performTenMinuteUpdate"/>
+                    Point splashPoint = loc.fishSplashPoint.Value;
+                    // FarmFishing
+                    if (loc.isOutdoors.Value && Game1.IsMasterGame && (!(loc is Farm) || Game1.whichFarm == 1))
+                    {
+                        if (splashPoint.Equals(Point.Zero))
+                        {
+                            
+                            if (!loc.isOpenWater(tileX, tileY) || loc.doesTileHaveProperty(tileX, tileY, "NoFishing", "Back") != null)
+                            {
+                                Monitor.Log($"failed to set fishSplashPoint. isNotOpenWater={!loc.isOpenWater(tileX, tileY)}, NoFishing={loc.doesTileHaveProperty(tileX, tileY, "NoFishing", "Back") != null}", LogLevel.Debug);
+                                break;
+                            }
+                            int toLand = FishingRod.distanceToLand(tileX, tileY, loc);
+                            if (toLand <= 1 || toLand >= 5)
+                            {
+                                Monitor.Log($"failed to set fishSplashPoint. distanceToLand={toLand}", LogLevel.Debug);
+                                break;
+                            }
+
+                            DebugHelper.SetPrivateField(loc, "fishSplashPointTime", Game1.timeOfDay);
+                            loc.fishFrenzyFish.Value = "";
+                            loc.fishSplashPoint.Value = new Point(tileX, tileY);
+                            Monitor.Log($"Set fishSplashPoint to ({tileX}, {tileY})", LogLevel.Debug);
+                        }
+                        else
+                        {
+                            DebugHelper.SetPrivateField(loc, "fishSplashPointTime", 0);
+                            loc.fishFrenzyFish.Value = "";
+                            loc.fishSplashPoint.Value = Point.Zero;
+                            Monitor.Log($"Reset fishSplashPoint.", LogLevel.Debug);
+                        }
+                    }
+
                 }
-            }
-            else
-            {
-                Monitor.Log("This tile is outside the map.", LogLevel.Debug);
-            }
+                else
+                {
+                    Monitor.Log("This tile is outside the map.", LogLevel.Debug);
+                }
+            } while (false);
+
         }
 #endif
     }
@@ -371,6 +478,11 @@ internal class ModEntry : Mod
                 name: I18n.Config_EnableOverlay_Name,
                 tooltip: I18n.Config_EnableOverlay_Desc
             );
+        configMenu.AddBoolOption(mod: ModManifest,
+            getValue: () => config.DrawOnTop,
+            setValue: (value) => config.DrawOnTop = value,
+            name: I18n.Config_DrawOverlayOnTop_Name
+        );
 
         // TODO of GMCMOptions: Color and image pickers are not interactive on Android
         if (configMenuExt is null || featuresNotSupported) return;
@@ -432,6 +544,7 @@ internal class ModEntry : Mod
                     drawSample: configMenuExt.MakeColorSwatchDrawer(drawBackground: DrawWater)
                  );
         }
+
         // unfishable tiles
         configMenu.AddSectionTitle(ModManifest, I18n.Config_Title_Unfishable, I18n.Config_Unfishable_Desc);
         configMenu.AddBoolOption(ModManifest,

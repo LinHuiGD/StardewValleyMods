@@ -1,4 +1,5 @@
 ﻿using StardewModdingAPI;
+using System;
 using System.Reflection;
 namespace Fai0.StardewValleyMods.Common;
 
@@ -35,5 +36,28 @@ internal static class DebugHelper
         }
 
         return output.ToString();
+    }
+
+    public static FieldInfo? GetFieldIncludingBase(Type? type, string fieldName)
+    {
+        while (type is not null)
+        {
+            FieldInfo? field = type.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+            if (field != null) return field;
+            type = type.BaseType;
+        }
+        return null;
+    }
+
+    public static void SetPrivateField(object obj, string fieldName, object value)
+    {
+        if (obj == null) throw new System.ArgumentNullException(nameof(obj));
+        System.Type type = obj.GetType();
+        FieldInfo? field = GetFieldIncludingBase(type, fieldName);
+        if (field == null)
+        {
+            throw new System.ArgumentException($"Field '{fieldName}' not found in type '{type.Name}'.");
+        }
+        field.SetValue(obj, value);
     }
 }

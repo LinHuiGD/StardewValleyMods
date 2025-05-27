@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Locations;
+using System.Collections.Generic;
 
 namespace Fai0.StardewValleyMods.Common;
 
@@ -157,15 +158,73 @@ internal static class DrawHelper
 
         if (Game1.currentLocation is not null)
         {
-            // animation
-            Rectangle cachedScissorRect = b.GraphicsDevice.ScissorRectangle;
-            if (enableScissor) b.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(destRect, cachedScissorRect);
-            b.Begin(SpriteSortMode.Deferred, ColorBlendState, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
-            DrawWaterAnim(b, destRect);
-            b.End();
-            if (enableScissor) b.GraphicsDevice.ScissorRectangle = cachedScissorRect;
+            do
+            {
+                if (Game1.currentLocation.waterTiles is null) break;
+                // animation
+                Rectangle cachedScissorRect = b.GraphicsDevice.ScissorRectangle;
+                if (enableScissor) b.GraphicsDevice.ScissorRectangle = Rectangle.Intersect(destRect, cachedScissorRect);
+                b.Begin(SpriteSortMode.Deferred, ColorBlendState, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
+                DrawWaterAnim(b, destRect);
+                b.End();
+                if (enableScissor) b.GraphicsDevice.ScissorRectangle = cachedScissorRect;
+            } while (false);
+
         }
-        // recover
         b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
+    }
+
+    /// <summary>Draw a sprite to the screen.</summary>
+    /// <see href="https://github.com/Pathoschild/StardewMods/blob/stable/Common/CommonHelper.cs" />
+    /// <param name="batch">The sprite batch.</param>
+    /// <param name="x">The X-position at which to start the line.</param>
+    /// <param name="y">The X-position at which to start the line.</param>
+    /// <param name="size">The line dimensions.</param>
+    /// <param name="color">The color to tint the sprite.</param>
+    public static void DrawLine(this SpriteBatch batch, float x, float y, Vector2 size, Color? color = null)
+    {
+        batch.Draw(Pixel, new Rectangle((int)x, (int)y, (int)size.X, (int)size.Y), color ?? Color.White);
+    }
+
+    /// <see href="https://github.com/Pathoschild/StardewMods/blob/stable/Automate/Framework/OverlayMenu.cs" />
+    public static void DrawEdgeBorders(SpriteBatch spriteBatch, Vector2 tile, Color color, bool top, bool bottom, bool left, bool right)
+    {
+        int borderSize = 3;
+        float screenX = tile.X * Game1.tileSize - Game1.viewport.X;
+        float screenY = tile.Y * Game1.tileSize - Game1.viewport.Y;
+        float tileSize = Game1.tileSize;
+
+        // top
+        if (top)
+            spriteBatch.DrawLine(screenX, screenY, new Vector2(tileSize, borderSize), color);
+
+        // bottom
+        if (bottom)
+            spriteBatch.DrawLine(screenX, screenY + tileSize, new Vector2(tileSize, borderSize), color);
+
+        // left
+        if (left)
+            spriteBatch.DrawLine(screenX, screenY, new Vector2(borderSize, tileSize), color);
+
+        // right
+        if (right)
+            spriteBatch.DrawLine(screenX + tileSize, screenY, new Vector2(borderSize, tileSize), color);
+    }
+
+    public static void DrawEdgeBorders(SpriteBatch spriteBatch, Rectangle rect, Color color)
+    {
+        int borderSize = 3;
+
+        // top
+        spriteBatch.DrawLine(rect.X, rect.Y, new Vector2(rect.Width, borderSize), color);
+
+        // bottom
+        spriteBatch.DrawLine(rect.X, rect.Y + rect.Height, new Vector2(rect.Width, borderSize), color);
+
+        // left
+        spriteBatch.DrawLine(rect.X, rect.Y, new Vector2(borderSize, rect.Height), color);
+
+        // right
+        spriteBatch.DrawLine(rect.X + rect.Width, rect.Y, new Vector2(borderSize, rect.Height), color);
     }
 }

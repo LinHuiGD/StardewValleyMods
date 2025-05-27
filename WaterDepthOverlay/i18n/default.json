@@ -4,6 +4,7 @@
   "config.enable.name": "Enable",
   "config.enable-overlay.name": "Keybind to toggle overlay",
   "config.enable-overlay.desc": "Press it to toggle overlay on/off.",
+  "config.draw-overlay-on-top.name": "Draw on top",
   // fishable tile overlay
   "config.title.fishable": "Fishable Tile Overlay Colors (RGBA)",
   "config.background.name": "Background for reference",

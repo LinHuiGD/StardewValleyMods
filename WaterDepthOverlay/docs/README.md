@@ -56,3 +56,7 @@ Examples of in-game drawing of this mod which show the water depth(same as Fis
 ## Multi-language
 Contributes are welcome.  
 Available translations: `English`, `Chinese`
+
+## See also
+* [Release notes](release-notes.md)
+* [Nexus mod](https://www.nexusmods.com/stardewvalley/mods/34207)

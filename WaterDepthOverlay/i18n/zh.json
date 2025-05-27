@@ -4,6 +4,7 @@
   "config.enable.name": "启用",
   "config.enable-overlay.name": "遮罩显示开关快捷键",
   "config.enable-overlay.desc": "按下它可以打开/关闭覆盖。",
+  "config.draw-overlay-on-top.name": "是否在顶层绘制遮罩",
   // 水网格颜色部分
   "config.title.fishable": "可钓鱼的网格遮罩颜色(RGBA)",
   "config.background.name": "供参考的背景",
