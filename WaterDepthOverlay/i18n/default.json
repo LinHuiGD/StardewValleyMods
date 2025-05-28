@@ -2,8 +2,9 @@
   // main options
   "config.title.mainoptions": "Main Options",
   "config.enable.name": "Enable",
-  "config.enable-overlay.name": "Keybind to toggle overlay",
-  "config.enable-overlay.desc": "Press it to toggle overlay on/off.",
+  "config.enable.desc": "When this option is enabled, \nthis mod will cache some water depth data in the background, \neven if the key of drawing overlay is not pressed. \nIf you want to reduce these computing costs, \nyou can turn off this option, \notherwise I suggest you keep this option enabled.",
+  "config.enable-overlay.name": "Keybind to overlay drawing",
+  "config.enable-overlay.desc": "Press it to start/stop drawing the overlay.",
   "config.draw-overlay-on-top.name": "Draw on top",
   // fishable tile overlay
   "config.title.fishable": "Fishable Tile Overlay Colors (RGBA)",
@@ -19,5 +20,7 @@
   "config.building-overlay-color.desc": "Blocked by buildings, bridges, shores, etc.",
   "config.enable-nofishing-overlay.name": "Enable drawing overlay",
   "config.nofishing-color.name": "No fishing allowed here",
-  "config.nofishing-color.desc": "Defined by property of \"NoFishing\" of a tile. The \"NoFishing\" property is rarely used.\nA water tile with the \"NoFishing\" property is usually covered by other objects.\nIn SDV 1.6.15, only the tiles of two maps have this property.\nOne of them is the beach (night market).\nThis property seems to prevent players from casting bobbers on objects \nsuch as ships refreshed during the festival.\nThe other map is the mountain. \nThe tiles with the \"NoFishing\" property are usually covered by the glittering boulder, \nwhich is removed after finishing the Specialty Fish Bundle."
+  "config.nofishing-color.desc": "Defined by property of \"NoFishing\" of a tile. The \"NoFishing\" property is rarely used.\nA water tile with the \"NoFishing\" property is usually covered by other objects.\nIn SDV 1.6.15, only the tiles of two maps have this property.\nOne of them is the beach (night market).\nThis property seems to prevent players from casting bobbers on objects \nsuch as ships refreshed during the festival.\nThe other map is the mountain. \nThe tiles with the \"NoFishing\" property are usually covered by the glittering boulder, \nwhich is removed after finishing the Specialty Fish Bundle.",
+  "message.enable-overlay": "Start drawing Overlay.",
+  "message.disable-overlay": "Stop drawing Overlay."
 }

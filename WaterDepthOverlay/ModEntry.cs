@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.Menus;
@@ -17,8 +16,6 @@ using xTile.Layers;
 using xTile.Tiles;
 using Pathoschild.Stardew.Common;
 using StardewValley.Locations;
-using System;
-
 
 namespace Fai0.StardewValleyMods.WaterDepthOverlay;
 
@@ -82,7 +79,7 @@ internal class ModEntry : Mod
     }
 
 
-    public void OnEnableChanged(bool enable)
+    public void SetEnable(bool enable)
     {
         bool old = config.Enable;
         if (old == enable) return;
@@ -325,6 +322,11 @@ internal class ModEntry : Mod
         if (config.ToggleEnableOverlayKey.JustPressed())
         {
             config.EnableOverlay = !config.EnableOverlay;
+            Monitor.Log($"EnableOverlay: {config.EnableOverlay}", LogLevel.Debug);
+            string msg = config.EnableOverlay ? I18n.Message_EnableOverlay() : I18n.Message_DisableOverlay();
+            Game1.addHUDMessage(new HUDMessage($"{ModManifest.Name} {msg}", HUDMessage.newQuest_type));
+            // Users are likely to mistakenly think that "enable" is the switch for drawing the overlay.
+            if (config.EnableOverlay && !config.Enable) SetEnable(true);
         }
 #if DEBUG
         if (DebugSplashPointKey.JustPressed())
@@ -466,7 +468,7 @@ internal class ModEntry : Mod
         configMenu.AddSectionTitle(ModManifest, I18n.Config_Title_Mainoptions);
         configMenu.AddBoolOption(mod: ModManifest,
             getValue: () => config.Enable,
-            setValue: OnEnableChanged,
+            setValue: SetEnable,
             name: I18n.Config_Enable_Name
         );
         // TODO of GMCM: Support virtual keyboard input. GenericModConfigMenu.Framework.SpecificModConfigMenu 

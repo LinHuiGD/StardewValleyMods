@@ -1,6 +1,11 @@
 [← back to readme](README.md)
 
 # Release notes
+## 1.0.3
+Released 28 May 2025 for SMAPI 4.1.10 or later.
+
+* Improved translations of enable options.
+
 ## 1.0.2
 Released 28 May 2025 for SMAPI 4.1.10 or later.
 
@@ -9,7 +14,7 @@ Released 28 May 2025 for SMAPI 4.1.10 or later.
 ## 1.0.1
 Released 25 May 2025 for SMAPI 4.1.10 or later.
 
-* No substantive content update, just code optimization for water animation.
+* Internal changes to water animation.
 
 ## 1.0.0
 Released 24 May 2025 for SMAPI 4.1.10 or later.
