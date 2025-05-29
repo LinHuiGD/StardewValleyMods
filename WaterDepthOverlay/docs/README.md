@@ -1,5 +1,8 @@
 ## Introduction
 Inspired by [Fishing_Strategy](https://stardewvalleywiki.com/Fishing_Strategy), I decide to implement in-game visual effects of [Fishing_Strategy#Fishing_Zones](https://stardewvalleywiki.com/Fishing_Strategy#Fishing_Zones).
+
+[简体中文](README.zh-Hans.md)
+
 ## **What is Fishing Zone/Water Depth?**
 >*Here are extracts from [Fishing#Fishing_Zone](https://stardewvalleywiki.com/Fishing#Fishing_Zone)*  
 >Every water tile is assigned a Fishing Zone of 0, 1, 2, 3, or 5 that controls many aspects of fishing. **The further from land (in every direction), the better the zone.** The game considers most walkable surfaces, including islands, piers, and stone bridges to be "**land**"; wooden footbridges are one exception.  
