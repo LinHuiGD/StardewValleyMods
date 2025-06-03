@@ -1,0 +1,3 @@
+[submodule "External/Pathoschild/StardewMods"]
+	path = External/Pathoschild/StardewMods
+	url = https://github.com/Pathoschild/StardewMods.git
