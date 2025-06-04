@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DonateBundleAnywhere", "Don
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Toys", "Toys", "{98A671F4-4B30-4D18-8262-179CAF0ED659}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FishingProbe", "Internal\FishingProbe\FishingProbe.csproj", "{13474514-E2E2-4B11-BB1A-E2CDE44E48A3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FishingProbe", "FishingProbe\FishingProbe.csproj", "{13474514-E2E2-4B11-BB1A-E2CDE44E48A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

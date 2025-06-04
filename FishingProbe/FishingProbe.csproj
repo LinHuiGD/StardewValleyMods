@@ -9,5 +9,5 @@
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" />
   </ItemGroup>
 
-  <Import Project="..\..\External\Pathoschild\StardewMods\Common.Patching\Common.Patching.projitems" Label="Shared" />
+  <Import Project="..\External\Pathoschild\StardewMods\Common.Patching\Common.Patching.projitems" Label="Shared" />
 </Project>
