@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Fai0.StardewValleyMods.FishingProbe</RootNamespace>
+    <EnableHarmony>true</EnableHarmony>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" />
+  </ItemGroup>
+
+  <Import Project="..\..\External\Pathoschild\StardewMods\Common.Patching\Common.Patching.projitems" Label="Shared" />
+</Project>

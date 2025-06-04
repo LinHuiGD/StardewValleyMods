@@ -10,6 +10,7 @@
     <PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" />
   </ItemGroup>
 
-  <Import Project="..\Common\Common.projitems" Label="Shared" />
-
+  <Import Project="..\External\Interfaces\Interfaces.projitems" Label="Shared" />
+  <Import Project="..\External\Pathoschild\StardewMods\Common\Common.projitems" Label="Shared" />
+  <Import Project="..\Internal\Common\Internal.Common.projitems" Label="Shared" />
 </Project>

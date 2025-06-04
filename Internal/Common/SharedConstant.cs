@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fai0.StardewValleyMods.Common;
+﻿namespace Fai0.StardewValleyMods.Common;
 
 internal class SharedConstant
 {

@@ -1,0 +1,11 @@
+{
+  "Name": "DonateBundleAnywhere",
+  "Author": "Fai0",
+  "Version": "0.1.0",
+  "Description": "TODO",
+  "UniqueID": "Fai0.DonateBundleAnywhere",
+  "EntryDll": "DonateBundleAnywhere.dll",
+  "MinimumApiVersion": "4.0.0",
+  "Dependencies": [],
+  "UpdateKeys": []
+}

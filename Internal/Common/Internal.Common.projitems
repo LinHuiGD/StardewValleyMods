@@ -9,11 +9,11 @@
     <Import_RootNamespace>Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)APIs\IGenericModConfigMenuApi.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)APIs\IGMCMOptionsAPI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DebugHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DrawHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TileHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedConstant.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)UI\" />
   </ItemGroup>
 </Project>

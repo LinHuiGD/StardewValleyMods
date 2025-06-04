@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Fai0.StardewValleyMods.DonateBundleAnywhere</RootNamespace>
+    <EnableHarmony>true</EnableHarmony>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" />
+  </ItemGroup>
+
+  <Import Project="..\External\Pathoschild\StardewMods\Common\Common.projitems" Label="Shared" />
+  <Import Project="..\External\Pathoschild\StardewMods\Common.Patching\Common.Patching.projitems" Label="Shared" />
+
+</Project>

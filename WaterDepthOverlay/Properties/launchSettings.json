@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WaterDepthOverlay": {
+      "commandName": "Project",
+      "commandLineArgs": " --mods-path \"C:\\Users\\linhui\\AppData\\Roaming\\Stardrop\\Data\\Selected Mods\""
+    }
+  }
+}

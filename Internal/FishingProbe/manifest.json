@@ -1,0 +1,11 @@
+{
+  "Name": "FishingProbe",
+  "Author": "Fai0",
+  "Version": "0.1.0",
+  "Description": "TODO",
+  "UniqueID": "Fai0.FishingProbe",
+  "EntryDll": "FishingProbe.dll",
+  "MinimumApiVersion": "4.0.0",
+  "Dependencies": [],
+  "UpdateKeys": []
+}

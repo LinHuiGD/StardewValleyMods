@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.Linq;
 using xTile.Layers;
 using xTile.Tiles;
-using Pathoschild.Stardew.Common;
 using Fai0.StardewValleyMods.Common;
 
 namespace Fai0.StardewValleyMods.WaterDepthOverlay;
@@ -250,7 +249,7 @@ internal class ModEntry : Mod
         FishingTile fishingTile;
         Color? color = null;
 
-        foreach (Vector2 tile in TileHelper.GetVisibleTiles(expand: 1))
+        foreach (Vector2 tile in Pathoschild.Stardew.Common.TileHelper.GetVisibleTiles(expand: 1))
         {
             color = null;
             int tileX = (int)tile.X;
