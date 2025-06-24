@@ -19,7 +19,7 @@ public class VaryingFields
 internal class ModConfig
 {
     // enable this mod
-    public bool Enable{ get; set; } = true;
+    public bool Enable { get; set; } = true;
     // enable overlay
     [Newtonsoft.Json.JsonIgnore]
     public bool EnableOverlay { get; set; } = true;
@@ -41,4 +41,6 @@ internal class ModConfig
     public Color NoFishingOverlayColor { get; set; } = new Color(0xc90000ff);
     // This tile is covered by building
     public Color BuildingOverlayColor { get; set; } = new Color(0xcb000000);
+    public bool DebugMode { get; set; } = false;
+
 }

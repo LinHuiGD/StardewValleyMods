@@ -5,7 +5,7 @@ VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaterDepthOverlay", "WaterDepthOverlay\WaterDepthOverlay.csproj", "{6F79D00C-50A4-4FA6-9183-C5D12D03E2C2}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Internal.Common", "Internal\Common\Internal.Common.shproj", "{639CB4D4-4EF7-4EEB-9EFB-A066C3B5E824}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Internal\Common\Common.shproj", "{639CB4D4-4EF7-4EEB-9EFB-A066C3B5E824}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = ".Common", "External\Pathoschild\StardewMods\Common\.Common.shproj", "{B9E9EDFC-E98A-4370-994F-40A9F39A0284}"
 EndProject
@@ -21,9 +21,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Internal", "Internal", "{12
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DonateBundleAnywhere", "DonateBundleAnywhere\DonateBundleAnywhere.csproj", "{4AAC2332-724D-FD8D-2B77-72620D03A341}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Toys", "Toys", "{98A671F4-4B30-4D18-8262-179CAF0ED659}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FishingProbe", "FishingProbe\FishingProbe.csproj", "{13474514-E2E2-4B11-BB1A-E2CDE44E48A3}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Patching", "Internal\Patching\Patching.shproj", "{EFB1C1BF-F9A4-426D-A011-DA9284C32076}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Experimental", "Experimental", "{DFCF5991-B0F6-4D1C-9CD2-91A50B0B5910}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,8 +55,9 @@ Global
 		{49C40E04-5A9F-47DA-8906-FA717816E772} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {71BF3988-8EBD-4B98-9BCF-321465E3F340}
 		{327A798B-686B-481E-8560-5C369462A361} = {71BF3988-8EBD-4B98-9BCF-321465E3F340}
-		{4AAC2332-724D-FD8D-2B77-72620D03A341} = {98A671F4-4B30-4D18-8262-179CAF0ED659}
-		{13474514-E2E2-4B11-BB1A-E2CDE44E48A3} = {98A671F4-4B30-4D18-8262-179CAF0ED659}
+		{4AAC2332-724D-FD8D-2B77-72620D03A341} = {DFCF5991-B0F6-4D1C-9CD2-91A50B0B5910}
+		{13474514-E2E2-4B11-BB1A-E2CDE44E48A3} = {DFCF5991-B0F6-4D1C-9CD2-91A50B0B5910}
+		{EFB1C1BF-F9A4-426D-A011-DA9284C32076} = {12A5C0E2-A5F5-49E0-B585-285013C19265}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {786567E4-E3FE-42E3-A145-3633839311F3}
@@ -65,10 +68,13 @@ Global
 		External\Pathoschild\StardewMods\Common.Patching\Common.Patching.projitems*{49c40e04-5a9f-47da-8906-fa717816e772}*SharedItemsImports = 13
 		External\Pathoschild\StardewMods\Common.Patching\Common.Patching.projitems*{4aac2332-724d-fd8d-2b77-72620d03a341}*SharedItemsImports = 5
 		External\Pathoschild\StardewMods\Common\Common.projitems*{4aac2332-724d-fd8d-2b77-72620d03a341}*SharedItemsImports = 5
-		Internal\Common\Internal.Common.projitems*{639cb4d4-4ef7-4eeb-9efb-a066c3b5e824}*SharedItemsImports = 13
+		Internal\Common\Common.projitems*{4aac2332-724d-fd8d-2b77-72620d03a341}*SharedItemsImports = 5
+		Internal\Patching\Patching.projitems*{4aac2332-724d-fd8d-2b77-72620d03a341}*SharedItemsImports = 5
+		Internal\Common\Common.projitems*{639cb4d4-4ef7-4eeb-9efb-a066c3b5e824}*SharedItemsImports = 13
 		External\Interfaces\Interfaces.projitems*{6f79d00c-50a4-4fa6-9183-c5d12d03e2c2}*SharedItemsImports = 5
 		External\Pathoschild\StardewMods\Common\Common.projitems*{6f79d00c-50a4-4fa6-9183-c5d12d03e2c2}*SharedItemsImports = 5
-		Internal\Common\Internal.Common.projitems*{6f79d00c-50a4-4fa6-9183-c5d12d03e2c2}*SharedItemsImports = 5
+		Internal\Common\Common.projitems*{6f79d00c-50a4-4fa6-9183-c5d12d03e2c2}*SharedItemsImports = 5
 		External\Pathoschild\StardewMods\Common\Common.projitems*{b9e9edfc-e98a-4370-994f-40a9f39a0284}*SharedItemsImports = 13
+		Internal\Patching\Patching.projitems*{efb1c1bf-f9a4-426d-a011-da9284c32076}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

@@ -1,55 +1,75 @@
 ﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewValley;
 using StardewValley.Menus;
 using Pathoschild.Stardew.Common.Patching;
 using Fai0.StardewValleyMods.DonateBundleAnywhere.Patches;
+using Fai0.StardewValleyMods.Common;
 using StardewValley.Locations;
+using StardewValley;
+using StardewValley.Characters;
+using System;
 
 namespace Fai0.StardewValleyMods.DonateBundleAnywhere;
 
-/// <summary>
-/// Not intended to release this mod, just for fun.
-/// </summary>
 internal class ModEntry : Mod
 {
-
+    public static HUDMessageHelper MsgHelper = null!;
+    public static CommandHandler commandHandler = null!;
     public override void Entry(IModHelper helper)
     {
+        I18n.Init(helper.Translation);
+        MsgHelper = new HUDMessageHelper(helper);
+        commandHandler = new CommandHandler(Monitor, Helper);
         helper.Events.Display.MenuChanged += OnMenuChanged;
-
-        HarmonyPatcher.Apply(this,
-            new JunimoNoteMenuPatcher(Monitor)
-        );
-
-        helper.ConsoleCommands.Add("donate-bundle", "TODO\n\nUsage: TODO [help|TODO]", this.OnCommand);
+        helper.Events.GameLoop.DayStarted += OnDayStarted;
+        helper.Events.Multiplayer.ModMessageReceived += OnModMessageReceived;
+        // HarmonyPatcher.Apply(this,
+        //     new Game1Patcher(Monitor, MsgHelper),
+        //     new JunimoNoteMenuPatcher(Monitor, Helper, ModManifest),
+        //     new RaccoonIconPatcher(Monitor, Helper, MsgHelper),
+        //     new MultiplayerPatcher(),
+        //     new GameLocationPatcher(),
+        //     new RaccoonPatcher()
+        // );
     }
 
-    private void OnMenuChanged(object? sender, MenuChangedEventArgs e)
-    {
-        Monitor.Log($"Menu changed: {e.OldMenu?.GetType().Name} -> {e.NewMenu?.GetType().Name}", LogLevel.Debug);
-        if (!Context.IsWorldReady || e.NewMenu is not JunimoNoteMenu menu)
-            return;
-        //foreach (Bundle bundle in menu.bundles)
-        //{
-        //    bundle.depositsAllowed = true;
-        //}
-    }
-
-    private void OnCommand(string command, string[] args)
-    {
-        Monitor.Log($"OnCommand, args={args}", LogLevel.Info);
-        string subCMD = args[0];
-        int baseIndex = 1;
-        if (subCMD.Equals("check"))
+	private void OnModMessageReceived(object? sender, ModMessageReceivedEventArgs e)
+	{
+        if (e.FromModID == ModManifest.UniqueID && e.Type == "AreaCompletedMessage")
         {
-            int area = ArgUtility.GetInt(args, baseIndex, 1);
-            CommunityCenter cc = Game1.RequireLocation<CommunityCenter>("CommunityCenter");
-            cc.checkBundle(area);
-            Monitor.Log($"checkbundle, area={CommunityCenter.getAreaDisplayNameFromNumber(area)}", LogLevel.Info);
-            // it worked, but there is a trivial issue.
-            // For example, after donating all bundles of an area, if the player immediately enter the community center, it can move and Junimo's animation is playing.
-            // However, the original intention of ConcernedApe should be that the player cannot move when playing the Junimo's animation.
+            AreaCompletedMessage message = e.ReadAs<AreaCompletedMessage>();
+            JunimoNoteMenuPatcher.OnReceivedAreaCompletedMessage(message);
+        }
+	}
+
+	private void OnDayStarted(object? sender, DayStartedEventArgs e)
+    {
+        // add Raccoon for remote access
+        // otherwise, raccoon will only be added utill player enters the forest 
+        if (Game1.MasterPlayer.mailReceived.Contains("raccoonMovedIn"))
+        {
+            Forest forset = Game1.RequireLocation<Forest>("Forest");
+            if (forset.getCharacterFromName("Raccoon") == null)
+            {
+                Monitor.Log("Add raccoon.", LogLevel.Trace);
+                forset.characters.Add(new Raccoon(mrs_racooon: false));
+            }
+        }
+    }
+
+	private void OnMenuChanged(object? sender, MenuChangedEventArgs e)
+    {
+        if (!Context.IsWorldReady)
+            return;
+		string oldDetail = ModUtilities.MenuDetails(e.OldMenu as JunimoNoteMenu);
+		string newDetail = ModUtilities.MenuDetails(e.NewMenu as JunimoNoteMenu);
+        Monitor.Log($"Menu changed: {e.OldMenu?.GetType().Name}{oldDetail} -> {e.NewMenu?.GetType().Name}{newDetail}", LogLevel.Trace);
+        if (e.NewMenu is JunimoNoteMenu junimoMenu)
+        {
+            foreach (Bundle bundle in junimoMenu.bundles)
+            {
+                bundle.depositsAllowed = true;
+            }
         }
     }
 }

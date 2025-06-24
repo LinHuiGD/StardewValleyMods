@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Locations;
-using System.Collections.Generic;
 
 namespace Fai0.StardewValleyMods.Common;
 

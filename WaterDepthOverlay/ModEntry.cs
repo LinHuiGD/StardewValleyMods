@@ -41,12 +41,10 @@ internal class ModEntry : Mod
     // water tiles for menu UI
     private List<WaterTileData>? waterTileDataList;
     private Dictionary<(string, int), int>? waterTileIndexMapping;
-
-#if DEBUG
     private bool enableSplashPointDrawing = false;
-    private KeybindList DebugTileKey { get; set; } = KeybindList.Parse("MouseMiddle");
-    private KeybindList DebugSplashPointKey { get; set; } = KeybindList.Parse("Home");
-#endif
+    private KeybindList? DebugTileKey;
+    private KeybindList? DebugSplashPointKey;
+
     public override void Entry(IModHelper helper)
     {
         I18n.Init(helper.Translation);
@@ -78,7 +76,6 @@ internal class ModEntry : Mod
         config.EnableOverlay = Constants.TargetPlatform == GamePlatform.Android || enable;
     }
 
-
     public void SetEnable(bool enable)
     {
         bool old = config.Enable;
@@ -97,6 +94,21 @@ internal class ModEntry : Mod
             Helper.Events.Player.Warped -= Player_Warped;
             Helper.Events.Display.RenderingStep -= OnRenderingStep;
             Helper.Events.Display.RenderedStep -= OnRenderedStep;
+        }
+    }
+
+    public void SetDebugMode(bool enable)
+    {
+        config.DebugMode = enable;
+        if (enable)
+        {
+            DebugTileKey = KeybindList.Parse("MouseMiddle");
+            DebugSplashPointKey = KeybindList.Parse("Home");
+        }
+        else
+        {
+            DebugTileKey = null;
+            DebugSplashPointKey = null;
         }
     }
 
@@ -165,7 +177,9 @@ internal class ModEntry : Mod
             }
         }
 
-#if DEBUG
+        #region debug
+        if (!config.DebugMode)
+            return;
         Monitor.Log($"Current location: {currentLocationName}", LogLevel.Debug);
         // print water depth map
         string line;
@@ -179,7 +193,7 @@ internal class ModEntry : Mod
             }
             Monitor.Log(line, LogLevel.Debug);
         }
-#endif
+        #endregion
     }
 
     private void CleanFishingTileSheet()
@@ -312,9 +326,12 @@ internal class ModEntry : Mod
         if (location is null || name is null || name != currentLocationName)
             return;
         if (config.DrawOnTop && e.Step == RenderSteps.World) DrawOverlay(location);
-#if DEBUG
+
+        #region debug
+        if (!config.DebugMode)
+            return;
         if (enableSplashPointDrawing && e.Step == RenderSteps.World) DrawSplashPointRect(location);
-#endif
+        #endregion
     }
 
     private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
@@ -328,13 +345,16 @@ internal class ModEntry : Mod
             // Users are likely to mistakenly think that "enable" is the switch for drawing the overlay.
             if (config.EnableOverlay && !config.Enable) SetEnable(true);
         }
-#if DEBUG
-        if (DebugSplashPointKey.JustPressed())
+
+        #region debug
+        if (!config.DebugMode)
+            return;
+        if (DebugSplashPointKey != null && DebugSplashPointKey.JustPressed())
         {
             enableSplashPointDrawing = !enableSplashPointDrawing;
             Monitor.Log($"enableSplashPointDrawing: {enableSplashPointDrawing}", LogLevel.Debug);
         }
-        if (DebugTileKey.JustPressed())
+        if (DebugTileKey != null && DebugTileKey.JustPressed())
         {
             var loc = Game1.currentLocation;
             do
@@ -363,11 +383,11 @@ internal class ModEntry : Mod
                     /// <see cref="StardewValley.GameLocation.performTenMinuteUpdate"/>
                     Point splashPoint = loc.fishSplashPoint.Value;
                     // FarmFishing
-                    if (loc.isOutdoors.Value && Game1.IsMasterGame && (!(loc is Farm) || Game1.whichFarm == 1))
+                    if (loc.IsOutdoors && Game1.IsMasterGame && ((loc is not Farm) || Game1.whichFarm == 1))
                     {
                         if (splashPoint.Equals(Point.Zero))
                         {
-                            
+
                             if (!loc.isOpenWater(tileX, tileY) || loc.doesTileHaveProperty(tileX, tileY, "NoFishing", "Back") != null)
                             {
                                 Monitor.Log($"failed to set fishSplashPoint. isNotOpenWater={!loc.isOpenWater(tileX, tileY)}, NoFishing={loc.doesTileHaveProperty(tileX, tileY, "NoFishing", "Back") != null}", LogLevel.Debug);
@@ -402,7 +422,7 @@ internal class ModEntry : Mod
             } while (false);
 
         }
-#endif
+        #endregion
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
@@ -466,6 +486,13 @@ internal class ModEntry : Mod
                     }
                 });
         configMenu.AddSectionTitle(ModManifest, I18n.Config_Title_Mainoptions);
+#if DEBUG
+        configMenu.AddBoolOption(mod: ModManifest,
+            getValue: () => config.DebugMode,
+            setValue: SetDebugMode,
+            name: () => "Debug Mode"
+        );
+#endif
         configMenu.AddBoolOption(mod: ModManifest,
             getValue: () => config.Enable,
             setValue: SetEnable,
@@ -507,15 +534,17 @@ internal class ModEntry : Mod
                 else
                     return (uint)waterTileDataList.Count - 1;
             },
-            maxImageHeight: () => SharedConstant.ColorBoxOuterSize,
-            maxImageWidth: () => SharedConstant.ColorBoxOuterSize,
+            maxImageHeight: () => 60,
+            maxImageWidth: () => 60,
             drawImage: (v, b, pos) =>
             {
                 // there is no TextureBox drawn by ImagePickerOption, draw it here
                 int left = (int)pos.X;
                 int top = (int)pos.Y;
-                IClickableMenu.drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, SharedConstant.ColorBoxInnerSize, SharedConstant.ColorBoxInnerSize), left, top, SharedConstant.ColorBoxOuterSize, SharedConstant.ColorBoxOuterSize, Color.White, 1f, false);
-                Rectangle destRect = new Rectangle(left + SharedConstant.ColorBoxBorder, top + SharedConstant.ColorBoxBorder, SharedConstant.ColorBoxInnerSize, SharedConstant.ColorBoxInnerSize);
+                const int texSize = 60;
+                const int border = 4;
+                IClickableMenu.drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, texSize, texSize), left, top, texSize, texSize, Color.White, 1f, false);
+                Rectangle destRect = new Rectangle(left + border, top + border, texSize - 2 * border, texSize - 2 * border);
                 DrawWater(b, destRect);
             },
 #if DEBUG

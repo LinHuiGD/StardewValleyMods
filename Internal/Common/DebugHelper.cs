@@ -1,6 +1,6 @@
-﻿using StardewModdingAPI;
-using System;
+﻿using System;
 using System.Reflection;
+
 namespace Fai0.StardewValleyMods.Common;
 
 internal static class DebugHelper
@@ -53,11 +53,8 @@ internal static class DebugHelper
     {
         if (obj == null) throw new System.ArgumentNullException(nameof(obj));
         System.Type type = obj.GetType();
-        FieldInfo? field = GetFieldIncludingBase(type, fieldName);
-        if (field == null)
-        {
-            throw new System.ArgumentException($"Field '{fieldName}' not found in type '{type.Name}'.");
-        }
+        FieldInfo? field = GetFieldIncludingBase(type, fieldName) ?? throw new System.ArgumentException($"Field '{fieldName}' not found in type '{type.Name}'.");
         field.SetValue(obj, value);
     }
+
 }

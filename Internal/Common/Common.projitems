@@ -6,14 +6,11 @@
     <SharedGUID>639cb4d4-4ef7-4eeb-9efb-a066c3b5e824</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Common</Import_RootNamespace>
+    <Import_RootNamespace>Fai0.StardewValleyMods.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DebugHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DrawHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SharedConstant.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)UI\" />
+    <Compile Include="$(MSBuildThisFileDirectory)DebugHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DrawHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HUDMessageHelper.cs" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <RootNamespace>Fai0.StardewValleyMods.DonateBundleAnywhere</RootNamespace>
@@ -6,10 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AdditionalFiles Include="i18n\default.json" />
+    <AdditionalFiles Include="i18n\zh.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" />
+    <PackageReference Include="Pathoschild.Stardew.ModTranslationClassBuilder" />
   </ItemGroup>
 
   <Import Project="..\External\Pathoschild\StardewMods\Common\Common.projitems" Label="Shared" />
   <Import Project="..\External\Pathoschild\StardewMods\Common.Patching\Common.Patching.projitems" Label="Shared" />
-
+  <Import Project="..\Internal\Common\Common.projitems" Label="Shared" />
+  <Import Project="..\Internal\Patching\Patching.projitems" Label="Shared" />
 </Project>
