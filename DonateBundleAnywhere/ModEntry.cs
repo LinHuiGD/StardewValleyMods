@@ -23,14 +23,14 @@ internal class ModEntry : Mod
         helper.Events.Display.MenuChanged += OnMenuChanged;
         helper.Events.GameLoop.DayStarted += OnDayStarted;
         helper.Events.Multiplayer.ModMessageReceived += OnModMessageReceived;
-        // HarmonyPatcher.Apply(this,
-        //     new Game1Patcher(Monitor, MsgHelper),
-        //     new JunimoNoteMenuPatcher(Monitor, Helper, ModManifest),
-        //     new RaccoonIconPatcher(Monitor, Helper, MsgHelper),
-        //     new MultiplayerPatcher(),
-        //     new GameLocationPatcher(),
-        //     new RaccoonPatcher()
-        // );
+        HarmonyPatcher.Apply(this,
+            new Game1Patcher(Monitor, MsgHelper),
+            new JunimoNoteMenuPatcher(Monitor, Helper, ModManifest),
+            new RaccoonIconPatcher(Monitor, Helper, MsgHelper),
+            new MultiplayerPatcher(),
+            new GameLocationPatcher(),
+            new RaccoonPatcher()
+        );
     }
 
 	private void OnModMessageReceived(object? sender, ModMessageReceivedEventArgs e)

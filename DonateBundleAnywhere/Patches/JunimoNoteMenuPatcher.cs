@@ -366,6 +366,7 @@ internal class JunimoNoteMenuPatcher : BasePatcher
 		cc.areasComplete[message.whichArea] = true;
 		Helper.Reflection.GetMethod(cc, "checkForMissedRewards").Invoke();
 		cc.loadArea(message.whichArea);
+		cc.addStarToPlaque();
 	}
 
 	public static void HandleRestoreArea(JunimoNoteMenu menu)
@@ -379,7 +380,7 @@ internal class JunimoNoteMenuPatcher : BasePatcher
 			Helper.Multiplayer.SendMessage(message, "AreaCompletedMessage", modIDs: [ModManifest.UniqueID]);
 			// it will not send msg to the Mod itself, invoke it
 			JunimoNoteMenuPatcher.OnReceivedAreaCompletedMessage(message);
-			Monitor.Log($"send AreaCompletedMessage(area={menu.whichArea}, who={Game1.player.UniqueMultiplayerID}", LogLevel.Trace);
+			Monitor.Log($"send AreaCompletedMessage(area={menu.whichArea}, who={Game1.player.UniqueMultiplayerID})", LogLevel.Trace);
 		}
 		else
 		{
@@ -393,7 +394,7 @@ internal class JunimoNoteMenuPatcher : BasePatcher
 	// load area immedialy instead of loading a cut scene
 	public static IEnumerable<CodeInstruction> HandleRestoreArea_Transpiler(IEnumerable<CodeInstruction> instructions)
 	{
-		// replaced the following block with HandleRestoreArea
+		// replaced the following block with JunimoNoteMenuPatcher.HandleRestoreArea
 		/*
 			// JunimoNoteMenu.receiveLeftClick / checkIfBundleIsComplete
 			communityCenter.markAreaAsComplete(this.whichArea);
